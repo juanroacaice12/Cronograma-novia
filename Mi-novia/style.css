@@ -9,24 +9,81 @@ body {
   min-height: 100vh;
 }
 
-/* Mosaico de banderas (detrás de TODO) */
+/* Mosaico de banderas hecho en CSS (sin imágenes externas) */
 .flags-bg {
   position: fixed;
   inset: 0;
   z-index: 0;               /* debajo del contenido */
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 14px;
   align-content: start;
-  padding: 16px;
+  padding: 14px;
   pointer-events: none;
-  opacity: 0.14;            /* ajusta 0.08–0.2 según gusto */
-  filter: saturate(1.1);
+  opacity: 0.22;            /* ajusta 0.1–0.3 según gusto */
+  filter: saturate(1.05);
+}
+.flag {
+  position: relative;
+  width: 100%;
+  padding-top: 62%;         /* aprox 3:2 */
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.06) inset, 0 2px 6px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+/* COLOMBIA: amarillo 50%, azul 25%, rojo 25% */
+.flag-co {
+  background:
+    linear-gradient(#FCD116 0 50%, #003893 50% 75%, #CE1126 75% 100%);
+}
+
+/* MÉXICO: verde, blanco, rojo (sin escudo) */
+.flag-mx {
+  background:
+    linear-gradient(90deg, #006847 0 33.33%, #fff 33.33% 66.66%, #CE1126 66.66% 100%);
+}
+
+/* PERÚ: rojo, blanco, rojo */
+.flag-pe {
+  background:
+    linear-gradient(90deg, #D91023 0 33.33%, #fff 33.33% 66.66%, #D91023 66.66% 100%);
+}
+
+/* CHINA: rojo con “estrella” simple */
+.flag-cn {
+  background: #DE2910;
+}
+.flag-cn::before {
+  content: "★";
+  position: absolute;
+  left: 10%;
+  top: 12%;
+  color: #FFDE00;
+  font-size: 22px;
+}
+
+/* COREA DEL SUR: fondo blanco con círculo rojo/azul (simplificado) */
+.flag-kr {
+  background: #fff;
+}
+.flag-kr::before {
+  content: "";
+  position: absolute;
+  width: 26%;
+  height: 26%;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: conic-gradient(#D80027 0 50%, #0052B4 0);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
 }
 
 /* Todo el contenido por encima del fondo */
 #access-screen,
-#main-content {
+#main-content,
+.notify-btn,
+.notify-toast {
   position: relative;
   z-index: 1;
 }
@@ -69,36 +126,31 @@ body {
   color: #7a1230;
   font-weight: bold;
 }
-
 .error {
   color: #c3002f;
   font-size: 0.9rem;
   margin-top: 6px;
 }
 
-/* Contenido principal */
+/* Contenedor principal */
 .container {
   padding: 20px;
   max-width: 700px;
   margin: auto;
 }
+h1 { font-size: 2.5rem; margin-bottom: 10px; }
+.love-phrase { margin: 0 0 16px; font-weight: bold; letter-spacing: 0.5px; }
 
-h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-}
-
-.love-phrase {
-  margin: 0 0 16px;
-  font-weight: bold;
-  letter-spacing: 0.5px;
-}
-
-/* Contador con efecto glass para legibilidad */
-.countdown {
+/* Paneles “glass” para legibilidad */
+.countdown,
+.card {
   background: rgba(255,255,255,0.9);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
+}
+
+/* Contador */
+.countdown {
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -106,16 +158,8 @@ h1 {
 }
 
 /* Tarjetas */
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
+.timeline { display: flex; flex-direction: column; gap: 20px; }
 .card {
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   padding: 15px 20px;
@@ -124,94 +168,76 @@ h1 {
   overflow: hidden;
   text-align: left;
 }
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-}
-
-.card h3 {
-  margin: 0;
-  font-size: 1.3rem;
-  color: #c32258;
-}
-
-.card-content {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: max-height 0.4s ease, opacity 0.4s ease;
-  margin-top: 10px;
-}
-
-.card.open .card-content {
-  max-height: 360px;
-  opacity: 1;
-}
-
-.card-content ul {
-  padding-left: 22px;
-}
+.card:hover { transform: translateY(-4px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+.card h3 { margin: 0; font-size: 1.3rem; color: #c32258; }
+.card-content { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.4s ease, opacity 0.4s ease; margin-top: 10px; }
+.card.open .card-content { max-height: 360px; opacity: 1; }
+.card-content ul { padding-left: 22px; }
 
 /* Bloqueado por fecha */
-.locked {
-  background: rgba(245,245,245,0.95);
-  color: #888;
-}
-.locked h3::after {
-  content: " 🔒";
-  font-size: 1rem;
-  color: #888;
-}
+.locked { background: rgba(245,245,245,0.95); color: #888; }
+.locked h3::after { content: " 🔒"; font-size: 1rem; color: #888; }
 
 /* Popups / modales */
 .popup {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.5);
   display: flex; align-items: center; justify-content: center;
   z-index: 9999;
 }
 .popup.hidden { display: none; }
-
 .popup-content {
-  background: white;
-  padding: 28px;
-  border-radius: 12px;
-  text-align: center;
-  max-width: 340px;
-  width: 90%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  background: white; padding: 28px; border-radius: 12px; text-align: center;
+  max-width: 340px; width: 90%; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
-
 .popup-content input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 8px;
 }
-
 .popup-content button {
-  background: #d63354;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  margin-top: 14px;
-  border-radius: 8px;
-  cursor: pointer;
+  background: #d63354; color: white; border: none; padding: 10px 18px;
+  margin-top: 14px; border-radius: 8px; cursor: pointer;
 }
 .popup-content button:hover { background: #b92a46; }
-
-.popup-content .secondary {
-  background: #e7e7e7;
-  color: #333;
-  margin-left: 8px;
-}
+.popup-content .secondary { background: #e7e7e7; color: #333; margin-left: 8px; }
 .popup-content .secondary:hover { background: #d9d9d9; }
-
 .modal-actions { display: flex; justify-content: center; gap: 8px; }
+
+/* Notificación (botón + toast) */
+.notify-btn {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  border: none;
+  border-radius: 50%;
+  width: 52px; height: 52px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  cursor: pointer;
+  font-size: 22px;
+}
+.notify-btn:hover { transform: translateY(-2px); }
+
+.notify-toast {
+  position: fixed;
+  right: 14px; bottom: 78px;
+  width: min(90vw, 320px);
+  background: rgba(255,255,255,0.98);
+  border-radius: 12px;
+  padding: 14px 14px 10px;
+  text-align: left;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.22);
+}
+.notify-toast ul {
+  margin: 8px 0 4px; padding-left: 18px;
+  max-height: 180px; overflow: auto;
+}
+.toast-close {
+  margin-top: 6px;
+  width: 100%;
+  background: #d63354; color: #fff; border: none;
+  border-radius: 8px; padding: 8px; cursor: pointer;
+}
+.toast-close:hover { background: #b92a46; }
 
 /* Utilidades */
 .hidden { display: none; }
