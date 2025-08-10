@@ -8,6 +8,9 @@ function checkAccess() {
   if (userKey === ACCESS_KEY) {
     document.getElementById("access-screen").classList.add("hidden");
     document.getElementById("main-content").classList.remove("hidden");
+
+    // Mostrar la notificación de llegada
+    scheduleInAppNotification();
   } else {
     errorMessage.textContent = "¡Ups! Intenta de nuevo 💔";
   }
@@ -21,8 +24,13 @@ window.addEventListener("DOMContentLoaded", () => {
   updateCountdown();
   showSoonMessage();
 
-  // notificación
+  // Notificación: prepara el toast/lista y botón
   setupNotification();
+
+  // Si por alguna razón el contenido ya está visible (tests), programa la notificación
+  if (!document.getElementById("main-content").classList.contains("hidden")) {
+    scheduleInAppNotification();
+  }
 });
 
 // Mensaje “ya faltan pocos días ⏰” en la pantalla de acceso
@@ -233,11 +241,59 @@ function setupNotification() {
   // Llenar la lista una sola vez
   list.innerHTML = lovePhrases.map(p => `<li>${p}</li>`).join("");
 
+  // Abrir/cerrar manual desde la campana
   btn.addEventListener("click", () => {
     toast.classList.toggle("hidden");
+    // si lo abre manual, ya no mostramos preview luego
+    if (!toast.classList.contains("hidden")) {
+      sessionStorage.setItem("loveMsgShown", "1");
+      btn.classList.remove("has-badge");
+      hidePreview();
+    }
   });
 }
 function closeToast() {
   const toast = document.getElementById("notifyToast");
   toast.classList.add("hidden");
+}
+
+// Preview programado tras el acceso
+function scheduleInAppNotification() {
+  // Evita repetir (una sola vez por sesión/navegación)
+  if (sessionStorage.getItem("loveMsgShown")) return;
+
+  const btn = document.getElementById("notifyBtn");
+  const preview = document.getElementById("notifyPreview");
+  const openBtn = document.getElementById("npOpen");
+  const closeBtn = document.getElementById("npClose");
+  if (!btn || !preview || !openBtn || !closeBtn) return;
+
+  // Mostrar el preview después de 1.2s
+  setTimeout(() => {
+    btn.classList.add("has-badge");
+    preview.classList.remove("hidden");
+    requestAnimationFrame(() => preview.classList.add("show"));
+  }, 1200);
+
+  const openToast = () => {
+    const toast = document.getElementById("notifyToast");
+    if (toast) toast.classList.remove("hidden");
+    sessionStorage.setItem("loveMsgShown", "1");
+    btn.classList.remove("has-badge");
+    hidePreview();
+  };
+
+  openBtn.addEventListener("click", openToast);
+  // Si toca la campana y hay preview → abrir toast
+  btn.addEventListener("click", () => {
+    if (!preview.classList.contains("hidden")) {
+      openToast();
+    }
+  });
+  closeBtn.addEventListener("click", hidePreview);
+
+  function hidePreview() {
+    preview.classList.remove("show");
+    setTimeout(() => preview.classList.add("hidden"), 200);
+  }
 }
