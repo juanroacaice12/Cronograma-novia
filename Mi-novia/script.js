@@ -1,5 +1,5 @@
-// Clave de acceso
-const ACCESS_KEY = "03-01-2025"; 
+// ===== Configuración de acceso general =====
+const ACCESS_KEY = "03-01-2025"; // cámbiala si quieres
 
 function checkAccess() {
   const userKey = document.getElementById("access-key").value.trim();
@@ -13,9 +13,16 @@ function checkAccess() {
   }
 }
 
-// ============================
-// Cronograma
-// ============================
+// Mensaje “ya faltan pocos días ⏰” en la pantalla de acceso
+(function showSoonMessage() {
+  const startDate = new Date("2025-08-13T00:00:00");
+  const now = new Date();
+  const days = Math.max(0, Math.ceil((startDate - now) / (1000 * 60 * 60 * 24)));
+  const soon = document.getElementById("soon-msg");
+  soon.textContent = `⏰ Ya faltan ${days} día${days === 1 ? "" : "s"}...`;
+})();
+
+// ===== Cronograma =====
 const events = [
   {
     date: "2025-08-13",
@@ -31,18 +38,21 @@ const events = [
   {
     date: "2025-08-14",
     title: "Jueves 14 de Agosto",
-    steps: ["Este día es sorpresa por tu cumpleaños 🎂"],
-    locked: true
+    steps: [
+      "Cena elegante 🍽️🎩",
+      "Desayuno sorpresa con tickets de regalo 🎟️🎁",
+      "Ramo de flores 💐"
+    ],
+    locked: true,          // Sigue bloqueado por fecha
+    requiresPass: true     // y además requiere contraseña al abrir
   },
   {
     date: "2025-08-15",
     title: "Viernes 15 de Agosto",
     steps: [
-      "Un día picante y especial 🔥",
-      "Comida increíble",
-      "Momentos íntimos inolvidables ❤️",
-      "Ir a mirar el vestido de grado 👗",
-      "¡Habrá una sorpresa oculta! 🎉"
+      "Comida especial 🍽️",
+      "Sabores del mundo: Corea 🇰🇷 y México 🇲🇽",
+      "Momentos para capturar juntos 📷"
     ],
     locked: false
   },
@@ -62,6 +72,11 @@ const events = [
     locked: false
   }
 ];
+
+// Contraseña para ver el detalle del Jueves (puedes cambiarla)
+const THURSDAY_PASS = "miamor"; 
+
+let pendingOpenCard = null; // tarjeta que espera validación de contraseña
 
 function renderEvents() {
   const today = new Date().toISOString().split("T")[0];
@@ -89,17 +104,26 @@ function renderEvents() {
     card.appendChild(content);
 
     card.addEventListener("click", () => {
+      // Si está bloqueado por fecha → popup de espera
       if (card.classList.contains("locked") && today < event.date) {
         openPopup();
-      } else {
-        card.classList.toggle("open");
+        return;
       }
+      // Si requiere contraseña (Jueves) → abrir modal y validar
+      if (event.requiresPass) {
+        pendingOpenCard = card;
+        openPassModal();
+        return;
+      }
+      // Abrir/cerrar normalmente
+      card.classList.toggle("open");
     });
 
     timeline.appendChild(card);
   });
 }
 
+// ====== Popups ======
 function openPopup() {
   document.getElementById("popup").classList.remove("hidden");
 }
@@ -107,6 +131,27 @@ function closePopup() {
   document.getElementById("popup").classList.add("hidden");
 }
 
+function openPassModal() {
+  document.getElementById("pass-modal").classList.remove("hidden");
+  document.getElementById("thursday-pass-input").value = "";
+  document.getElementById("pass-error").textContent = "";
+}
+function closePassModal() {
+  document.getElementById("pass-modal").classList.add("hidden");
+  pendingOpenCard = null;
+}
+function confirmThursdayPass() {
+  const val = document.getElementById("thursday-pass-input").value.trim();
+  const err = document.getElementById("pass-error");
+  if (val === THURSDAY_PASS) {
+    if (pendingOpenCard) pendingOpenCard.classList.toggle("open");
+    closePassModal();
+  } else {
+    err.textContent = "Contraseña incorrecta. Intenta de nuevo 💔";
+  }
+}
+
+// ====== Contador ======
 function updateCountdown() {
   const countdownTo = new Date("2025-08-13T00:00:00");
   const now = new Date();
