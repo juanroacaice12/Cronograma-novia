@@ -11,13 +11,21 @@
   <div class="flags-bg" aria-hidden="true" id="flagsBg"></div>
 
   <!-- Botón flotante de notificación -->
-  <button id="notifyBtn" class="notify-btn" title="Mensajito">
-    🔔
-  </button>
+  <button id="notifyBtn" class="notify-btn" title="Mensajito">🔔</button>
+
+  <!-- Toast con “Te amo en todos los idiomas” -->
   <div id="notifyToast" class="notify-toast hidden" role="status" aria-live="polite">
     <strong>Te amo en todos los idiomas:</strong>
     <ul id="loveList"></ul>
     <button class="toast-close" onclick="closeToast()">Cerrar</button>
+  </div>
+
+  <!-- Preview emergente de notificación -->
+  <div id="notifyPreview" class="notify-preview hidden" role="status" aria-live="polite">
+    <div class="np-title">Tienes un mensaje 💌</div>
+    <div class="np-text">Toca para abrir</div>
+    <button id="npOpen" class="np-open">Abrir</button>
+    <button id="npClose" class="np-close" aria-label="Cerrar">×</button>
   </div>
 
   <!-- Pantalla de acceso -->
