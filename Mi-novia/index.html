@@ -10,13 +10,14 @@
   <!-- Pantalla de acceso -->
   <div id="access-screen" class="access-screen">
     <h1>La llave de acceso 🔐</h1>
-    <p>La fecha de la primera vez que nos vimos 💖</p>
+    <p>Es la fecha de la primera vez que nos vimos 💖</p>
     <input type="text" id="access-key" placeholder="DD-MM-AAAA" />
     <button onclick="checkAccess()">Ingresar</button>
+    <p id="soon-msg" class="soon"></p>
     <p id="error-message" class="error"></p>
   </div>
 
-  <!-- Contenido del cronograma (oculto hasta que se desbloquee) -->
+  <!-- Contenido del cronograma (oculto hasta desbloquear) -->
   <div id="main-content" class="hidden">
     <div class="container">
       <h1>Nuestro Cronograma Romántico ❤️</h1>
@@ -27,7 +28,7 @@
       <div class="timeline" id="timeline"></div>
     </div>
 
-    <!-- Popup para días bloqueados -->
+    <!-- Popup de espera (día bloqueado por fecha) -->
     <div id="popup" class="popup hidden">
       <div class="popup-content">
         <h3>🎁 Sorpresa</h3>
@@ -35,8 +36,23 @@
         <button onclick="closePopup()">Cerrar</button>
       </div>
     </div>
+
+    <!-- Modal de contraseña (para el Jueves 14) -->
+    <div id="pass-modal" class="popup hidden">
+      <div class="popup-content">
+        <h3>🔒 Contenido protegido</h3>
+        <p>Ingresa la contraseña para ver el plan del 14 de agosto:</p>
+        <input type="password" id="thursday-pass-input" placeholder="Contraseña" />
+        <div class="modal-actions">
+          <button onclick="confirmThursdayPass()">Ver</button>
+          <button class="secondary" onclick="closePassModal()">Cancelar</button>
+        </div>
+        <p id="pass-error" class="error"></p>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
 </body>
 </html>
+
