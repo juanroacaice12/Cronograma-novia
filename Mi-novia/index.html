@@ -7,8 +7,18 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Fondo de banderas global -->
+  <!-- Fondo de banderas (hechas en CSS) -->
   <div class="flags-bg" aria-hidden="true" id="flagsBg"></div>
+
+  <!-- Botón flotante de notificación -->
+  <button id="notifyBtn" class="notify-btn" title="Mensajito">
+    🔔
+  </button>
+  <div id="notifyToast" class="notify-toast hidden" role="status" aria-live="polite">
+    <strong>Te amo en todos los idiomas:</strong>
+    <ul id="loveList"></ul>
+    <button class="toast-close" onclick="closeToast()">Cerrar</button>
+  </div>
 
   <!-- Pantalla de acceso -->
   <div id="access-screen" class="access-screen">
