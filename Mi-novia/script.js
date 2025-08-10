@@ -1,5 +1,5 @@
-// ===== Configuración de acceso general =====
-const ACCESS_KEY = "03-01-2025"; // cámbiala si quieres
+// ===== Acceso general =====
+const ACCESS_KEY = "03-01-2025"; // fecha para entrar al cronograma
 
 function checkAccess() {
   const userKey = document.getElementById("access-key").value.trim();
@@ -23,6 +23,7 @@ function checkAccess() {
 })();
 
 // ===== Cronograma =====
+// Nota: el 14 solo se desbloquea con contraseña; el 16 queda sellado por fecha.
 const events = [
   {
     date: "2025-08-13",
@@ -39,12 +40,13 @@ const events = [
     date: "2025-08-14",
     title: "Jueves 14 de Agosto",
     steps: [
-      "Cena elegante 🍽️🎩",
-      "Desayuno sorpresa con tickets de regalo 🎟️🎁",
-      "Ramo de flores 💐"
+      "Llegada a las 10:00 am al Airbnb 🏡",
+      "Almuerzo express ⚡",
+      "Centro comercial de tu preferencia 🛍️",
+      "Cena romántica 🍽️✨"
     ],
-    locked: true,          // Sigue bloqueado por fecha
-    requiresPass: true     // y además requiere contraseña al abrir
+    locked: false,        // no bloqueado por fecha
+    requiresPass: true    // pero requiere contraseña para ver
   },
   {
     date: "2025-08-15",
@@ -60,7 +62,7 @@ const events = [
     date: "2025-08-16",
     title: "Sábado 16 de Agosto",
     steps: ["Este día está sellado, ¡sorpresa! 🤫"],
-    locked: true
+    locked: true          // sellado por fecha (sin password)
   },
   {
     date: "2025-08-17",
@@ -73,10 +75,10 @@ const events = [
   }
 ];
 
-// Contraseña para ver el detalle del Jueves (puedes cambiarla)
-const THURSDAY_PASS = "miamor"; 
+// Contraseña para el día 14:
+const THURSDAY_PASS = "antonella"; 
 
-let pendingOpenCard = null; // tarjeta que espera validación de contraseña
+let pendingOpenCard = null; // tarjeta (DOM) en espera de desbloqueo por pass
 
 function renderEvents() {
   const today = new Date().toISOString().split("T")[0];
@@ -104,14 +106,14 @@ function renderEvents() {
     card.appendChild(content);
 
     card.addEventListener("click", () => {
-      // Si está bloqueado por fecha → popup de espera
+      // Bloqueado por fecha → popup de espera
       if (card.classList.contains("locked") && today < event.date) {
         openPopup();
         return;
       }
-      // Si requiere contraseña (Jueves) → abrir modal y validar
+      // Día con contraseña (14) → pedir pass
       if (event.requiresPass) {
-        pendingOpenCard = card;
+        pendingOpenCard = { card, event };
         openPassModal();
         return;
       }
@@ -143,8 +145,12 @@ function closePassModal() {
 function confirmThursdayPass() {
   const val = document.getElementById("thursday-pass-input").value.trim();
   const err = document.getElementById("pass-error");
-  if (val === THURSDAY_PASS) {
-    if (pendingOpenCard) pendingOpenCard.classList.toggle("open");
+  if (val.toLowerCase() === THURSDAY_PASS.toLowerCase()) {
+    if (pendingOpenCard) {
+      // Marcar como desbloqueado definitivo para no volver a pedir la contraseña
+      pendingOpenCard.event.requiresPass = false;
+      pendingOpenCard.card.classList.add("open");
+    }
     closePassModal();
   } else {
     err.textContent = "Contraseña incorrecta. Intenta de nuevo 💔";
