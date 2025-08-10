@@ -13,14 +13,26 @@ function checkAccess() {
   }
 }
 
+// ===== Al cargar el DOM =====
+window.addEventListener("DOMContentLoaded", () => {
+  buildFlagsBackground();    // fondo de banderas fiable (CSS)
+  renderEvents();
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+  showSoonMessage();
+
+  // notificación
+  setupNotification();
+});
+
 // Mensaje “ya faltan pocos días ⏰” en la pantalla de acceso
-(function showSoonMessage() {
+function showSoonMessage() {
   const startDate = new Date("2025-08-13T09:00:00"); // Miércoles 9:00 a. m.
   const now = new Date();
   const days = Math.max(0, Math.ceil((startDate - now) / (1000 * 60 * 60 * 24)));
   const soon = document.getElementById("soon-msg");
-  soon.textContent = `⏰ Ya faltan ${days} día${days === 1 ? "" : "s"}...`;
-})();
+  if (soon) soon.textContent = `⏰ Ya faltan ${days} día${days === 1 ? "" : "s"}...`;
+}
 
 // ===== Cronograma =====
 // Nota: el 14 se desbloquea con contraseña; el 16 queda sellado por fecha.
@@ -171,19 +183,61 @@ function updateCountdown() {
   document.getElementById("timer").textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 }
 
-// ====== Fondo de banderas ======
+// ====== Fondo de banderas (CSS-based tiles) ======
 function buildFlagsBackground() {
-  const flags = ["🇰🇷","🇨🇴","🇨🇳","🇲🇽","🇵🇪"];
   const container = document.getElementById("flagsBg");
-  const cells = 160; // más celdas = más cobertura
-  let html = "";
-  for (let i = 0; i < cells; i++) {
-    html += `<span style="font-size:26px">${flags[i % flags.length]}</span>`;
+  if (!container) return;
+
+  // Decide cuántas celdas necesitamos según la pantalla
+  const approxCellW = 100, approxCellH = 66; // tamaño aprox de cada flag
+  const cols = Math.ceil(window.innerWidth / (approxCellW + 14));
+  const rows = Math.ceil(window.innerHeight / (approxCellH + 14)) + 2;
+  const total = cols * rows;
+
+  // Ciclo de banderas
+  const classes = ["flag-kr", "flag-co", "flag-cn", "flag-mx", "flag-pe"];
+
+  // Rellenar
+  container.innerHTML = "";
+  for (let i = 0; i < total; i++) {
+    const div = document.createElement("div");
+    div.className = `flag ${classes[i % classes.length]}`;
+    container.appendChild(div);
   }
-  container.innerHTML = html;
 }
 
-buildFlagsBackground();
-renderEvents();
-setInterval(updateCountdown, 1000);
-updateCountdown();
+// Recalcular en resize por si cambia el layout
+window.addEventListener("resize", buildFlagsBackground);
+
+// ====== Notificación con “Te amo” en varios idiomas ======
+const lovePhrases = [
+  "Te amo (Español)",
+  "I love you (English)",
+  "Saranghae 사랑해 (한국어)",
+  "Wo ai ni 我爱你 (中文)",
+  "Je t’aime (Français)",
+  "Ti amo (Italiano)",
+  "Ich liebe dich (Deutsch)",
+  "Eu te amo (Português)",
+  "Aishiteru 愛してる (日本語)",
+  "Ya tebya lyublyu Я тебя люблю (Русский)",
+  "Ana uhibbuka/uhibbuki أنا أحبك (العربية)"
+];
+
+function setupNotification() {
+  const btn = document.getElementById("notifyBtn");
+  const toast = document.getElementById("notifyToast");
+  const list = document.getElementById("loveList");
+  if (!btn || !toast || !list) return;
+
+  // Llenar la lista una sola vez
+  list.innerHTML = lovePhrases.map(p => `<li>${p}</li>`).join("");
+
+  btn.addEventListener("click", () => {
+    toast.classList.toggle("hidden");
+  });
+}
+function closeToast() {
+  const toast = document.getElementById("notifyToast");
+  toast.classList.add("hidden");
+}
