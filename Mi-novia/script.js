@@ -15,7 +15,7 @@ function checkAccess() {
 
 // Mensaje “ya faltan pocos días ⏰” en la pantalla de acceso
 (function showSoonMessage() {
-  const startDate = new Date("2025-08-13T00:00:00");
+  const startDate = new Date("2025-08-13T09:00:00"); // Miércoles 9:00 a. m.
   const now = new Date();
   const days = Math.max(0, Math.ceil((startDate - now) / (1000 * 60 * 60 * 24)));
   const soon = document.getElementById("soon-msg");
@@ -23,7 +23,7 @@ function checkAccess() {
 })();
 
 // ===== Cronograma =====
-// Nota: el 14 solo se desbloquea con contraseña; el 16 queda sellado por fecha.
+// Nota: el 14 se desbloquea con contraseña; el 16 queda sellado por fecha.
 const events = [
   {
     date: "2025-08-13",
@@ -32,6 +32,7 @@ const events = [
       "Llegada al aeropuerto ✈️",
       "Desayuno en un lugar bonito 🍳",
       "Almuerzo delicioso 🥗",
+      "Resolver casos 🕵️‍♀️🧩",
       "Películas + Pizza 🍕 con misterio y diversión"
     ],
     locked: false
@@ -45,8 +46,8 @@ const events = [
       "Centro comercial de tu preferencia 🛍️",
       "Cena romántica 🍽️✨"
     ],
-    locked: false,        // no bloqueado por fecha
-    requiresPass: true    // pero requiere contraseña para ver
+    locked: false,        // no por fecha
+    requiresPass: true    // requiere contraseña
   },
   {
     date: "2025-08-15",
@@ -54,6 +55,7 @@ const events = [
     steps: [
       "Comida especial 🍽️",
       "Sabores del mundo: Corea 🇰🇷 y México 🇲🇽",
+      "Opción: ir a bailar 💃🕺",
       "Momentos para capturar juntos 📷"
     ],
     locked: false
@@ -62,7 +64,7 @@ const events = [
     date: "2025-08-16",
     title: "Sábado 16 de Agosto",
     steps: ["Este día está sellado, ¡sorpresa! 🤫"],
-    locked: true          // sellado por fecha (sin password)
+    locked: true          // sellado por fecha
   },
   {
     date: "2025-08-17",
@@ -159,16 +161,29 @@ function confirmThursdayPass() {
 
 // ====== Contador ======
 function updateCountdown() {
-  const countdownTo = new Date("2025-08-13T00:00:00");
+  const countdownTo = new Date("2025-08-13T09:00:00"); // llegada miércoles 9:00 a. m.
   const now = new Date();
   const timeLeft = countdownTo - now;
-  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((timeLeft / (1000 * 60)) % 60);
-  const seconds = Math.floor((timeLeft / 1000) % 60);
+  const days = Math.max(0, Math.floor(timeLeft / (1000 * 60 * 60 * 24)));
+  const hours = Math.max(0, Math.floor((timeLeft / (1000 * 60 * 60)) % 24));
+  const minutes = Math.max(0, Math.floor((timeLeft / (1000 * 60)) % 60));
+  const seconds = Math.max(0, Math.floor((timeLeft / 1000) % 60));
   document.getElementById("timer").textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 }
 
+// ====== Fondo de banderas ======
+function buildFlagsBackground() {
+  const flags = ["🇰🇷","🇨🇴","🇨🇳","🇲🇽","🇵🇪"];
+  const container = document.getElementById("flagsBg");
+  const cells = 160; // más celdas = más cobertura
+  let html = "";
+  for (let i = 0; i < cells; i++) {
+    html += `<span style="font-size:26px">${flags[i % flags.length]}</span>`;
+  }
+  container.innerHTML = html;
+}
+
+buildFlagsBackground();
 renderEvents();
 setInterval(updateCountdown, 1000);
 updateCountdown();
