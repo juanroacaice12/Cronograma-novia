@@ -8,7 +8,6 @@ function checkAccess() {
   if (userKey === ACCESS_KEY) {
     document.getElementById("access-screen").classList.add("hidden");
     document.getElementById("main-content").classList.remove("hidden");
-
     // Mostrar la notificación de llegada
     scheduleInAppNotification();
   } else {
@@ -18,7 +17,7 @@ function checkAccess() {
 
 // ===== Al cargar el DOM =====
 window.addEventListener("DOMContentLoaded", () => {
-  buildFlagsBackground();    // fondo de banderas fiable (CSS)
+  buildFlagsBackground();    // fondo de banderas (CSS)
   renderEvents();
   setInterval(updateCountdown, 1000);
   updateCountdown();
@@ -27,7 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
   // Notificación: prepara el toast/lista y botón
   setupNotification();
 
-  // Si por alguna razón el contenido ya está visible (tests), programa la notificación
+  // Si ya está visible (tests), programa la notificación
   if (!document.getElementById("main-content").classList.contains("hidden")) {
     scheduleInAppNotification();
   }
@@ -43,7 +42,6 @@ function showSoonMessage() {
 }
 
 // ===== Cronograma =====
-// Nota: el 14 se desbloquea con contraseña; el 16 queda sellado por fecha.
 const events = [
   {
     date: "2025-08-13",
@@ -97,10 +95,10 @@ const events = [
   }
 ];
 
-// Contraseña para el día 14:
-const THURSDAY_PASS = "antonella"; 
+// Contraseña para el día 14 (case-insensitive):
+const THURSDAY_PASS = "antonella";
 
-let pendingOpenCard = null; // tarjeta (DOM) en espera de desbloqueo por pass
+let pendingOpenCard = null; // tarjeta en espera de desbloqueo por pass
 
 function renderEvents() {
   const today = new Date().toISOString().split("T")[0];
@@ -147,7 +145,7 @@ function renderEvents() {
   });
 }
 
-// ====== Popups ======
+// ====== Popups (fecha/contraseña) ======
 function openPopup() {
   document.getElementById("popup").classList.remove("hidden");
 }
@@ -169,7 +167,7 @@ function confirmThursdayPass() {
   const err = document.getElementById("pass-error");
   if (val.toLowerCase() === THURSDAY_PASS.toLowerCase()) {
     if (pendingOpenCard) {
-      // Marcar como desbloqueado definitivo para no volver a pedir la contraseña
+      // Desbloquear definitivo (no vuelve a pedir pass)
       pendingOpenCard.event.requiresPass = false;
       pendingOpenCard.card.classList.add("open");
     }
@@ -191,21 +189,18 @@ function updateCountdown() {
   document.getElementById("timer").textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 }
 
-// ====== Fondo de banderas (CSS-based tiles) ======
+// ====== Fondo de banderas (CSS tiles) ======
 function buildFlagsBackground() {
   const container = document.getElementById("flagsBg");
   if (!container) return;
 
-  // Decide cuántas celdas necesitamos según la pantalla
-  const approxCellW = 100, approxCellH = 66; // tamaño aprox de cada flag
+  const approxCellW = 100, approxCellH = 66;
   const cols = Math.ceil(window.innerWidth / (approxCellW + 14));
   const rows = Math.ceil(window.innerHeight / (approxCellH + 14)) + 2;
   const total = cols * rows;
 
-  // Ciclo de banderas
   const classes = ["flag-kr", "flag-co", "flag-cn", "flag-mx", "flag-pe"];
 
-  // Rellenar
   container.innerHTML = "";
   for (let i = 0; i < total; i++) {
     const div = document.createElement("div");
@@ -213,23 +208,30 @@ function buildFlagsBackground() {
     container.appendChild(div);
   }
 }
-
-// Recalcular en resize por si cambia el layout
 window.addEventListener("resize", buildFlagsBackground);
 
-// ====== Notificación con “Te amo” en varios idiomas ======
+// ====== Notificación con “Te amo” (20 idiomas, solo la frase) ======
 const lovePhrases = [
-  "Te amo (Español)",
-  "I love you (English)",
-  "Saranghae 사랑해 (한국어)",
-  "Wo ai ni 我爱你 (中文)",
-  "Je t’aime (Français)",
-  "Ti amo (Italiano)",
-  "Ich liebe dich (Deutsch)",
-  "Eu te amo (Português)",
-  "Aishiteru 愛してる (日本語)",
-  "Ya tebya lyublyu Я тебя люблю (Русский)",
-  "Ana uhibbuka/uhibbuki أنا أحبك (العربية)"
+  "Te amo",                // Español
+  "I love you",            // English
+  "사랑해",                 // Korean
+  "我爱你",                 // Chinese (Simplified)
+  "Je t’aime",             // French
+  "Ti amo",                // Italian
+  "Ich liebe dich",        // German
+  "Eu te amo",             // Portuguese
+  "愛してる",               // Japanese
+  "Я тебя люблю",          // Russian
+  "أحبك",                  // Arabic
+  "मैं तुमसे प्यार करता हूँ", // Hindi (masc.)
+  "Seni seviyorum",        // Turkish
+  "אני אוהב אותך",          // Hebrew (masc.)
+  "Σ' αγαπώ",              // Greek
+  "Ik hou van jou",        // Dutch
+  "Jag älskar dig",        // Swedish
+  "Kocham cię",            // Polish
+  "ฉันรักคุณ",              // Thai
+  "Aku cinta kamu"         // Indonesian
 ];
 
 function setupNotification() {
@@ -238,15 +240,13 @@ function setupNotification() {
   const list = document.getElementById("loveList");
   if (!btn || !toast || !list) return;
 
-  // Llenar la lista una sola vez
   list.innerHTML = lovePhrases.map(p => `<li>${p}</li>`).join("");
 
   // Abrir/cerrar manual desde la campana
   btn.addEventListener("click", () => {
     toast.classList.toggle("hidden");
-    // si lo abre manual, ya no mostramos preview luego
     if (!toast.classList.contains("hidden")) {
-      sessionStorage.setItem("loveMsgShown", "1");
+      sessionStorage.setItem("loveMsgShown", "1"); // marcar como visto
       btn.classList.remove("has-badge");
       hidePreview();
     }
@@ -255,11 +255,14 @@ function setupNotification() {
 function closeToast() {
   const toast = document.getElementById("notifyToast");
   toast.classList.add("hidden");
+  sessionStorage.setItem("loveMsgShown", "1"); // ya fue visto
+  const btn = document.getElementById("notifyBtn");
+  if (btn) btn.classList.remove("has-badge");
+  hidePreview();
 }
 
 // Preview programado tras el acceso
 function scheduleInAppNotification() {
-  // Evita repetir (una sola vez por sesión/navegación)
   if (sessionStorage.getItem("loveMsgShown")) return;
 
   const btn = document.getElementById("notifyBtn");
@@ -268,7 +271,6 @@ function scheduleInAppNotification() {
   const closeBtn = document.getElementById("npClose");
   if (!btn || !preview || !openBtn || !closeBtn) return;
 
-  // Mostrar el preview después de 1.2s
   setTimeout(() => {
     btn.classList.add("has-badge");
     preview.classList.remove("hidden");
@@ -286,14 +288,18 @@ function scheduleInAppNotification() {
   openBtn.addEventListener("click", openToast);
   // Si toca la campana y hay preview → abrir toast
   btn.addEventListener("click", () => {
-    if (!preview.classList.contains("hidden")) {
-      openToast();
-    }
+    if (!preview.classList.contains("hidden")) openToast();
   });
-  closeBtn.addEventListener("click", hidePreview);
+  closeBtn.addEventListener("click", () => {
+    hidePreview();
+    sessionStorage.setItem("loveMsgShown", "1"); // si la cierra, lo damos por visto
+    btn.classList.remove("has-badge");
+  });
+}
 
-  function hidePreview() {
-    preview.classList.remove("show");
-    setTimeout(() => preview.classList.add("hidden"), 200);
-  }
+function hidePreview() {
+  const preview = document.getElementById("notifyPreview");
+  if (!preview) return;
+  preview.classList.remove("show");
+  setTimeout(() => preview.classList.add("hidden"), 200);
 }
