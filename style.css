@@ -1,0 +1,155 @@
+body {
+  margin: 0;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  background: linear-gradient(to bottom right, #fbc2eb, #a6c1ee);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  color: #333;
+  overflow-x: hidden;
+}
+
+h1 {
+  color: white;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+  text-align: center;
+  animation: fadeIn 2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  border-radius: 20px;
+  padding: 20px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  margin: 15px 0;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.gradient {
+  background: linear-gradient(135deg, #fff, #ffe1f2);
+}
+
+.highlight {
+  background: #fff8c6;
+  border: 2px dashed #e2b007;
+}
+
+.hidden {
+  display: none;
+}
+
+.coupon {
+  font-size: 1.1rem;
+  font-weight: bold;
+  animation: bounce 1s infinite;
+}
+
+.extra-msg {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #d63384;
+  font-weight: normal;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.locked {
+  color: #888;
+}
+
+.roses {
+  font-size: 2rem;
+  margin-top: 10px;
+}
+
+.mes-title { color: #d63384; }
+.grado-title { color: #e63946; }
+
+/* Grid de la sopa */
+#grid {
+  display: grid;
+  gap: 4px;
+  margin: 10px auto;
+  justify-content: center;
+}
+
+.cell {
+  width: 32px;
+  height: 32px;
+  background: white;
+  border: 1px solid #ccc;
+  text-align: center;
+  line-height: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.cell.selected {
+  background: #ffb3c6;
+  transform: scale(1.1);
+}
+
+.cell.found {
+  background: #90ee90;
+}
+
+/* Quiz musical */
+#quiz button {
+  display: block;
+  margin: 8px auto;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  background: #ffb3c6;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+#quiz button:hover {
+  background: #ff5c8a;
+  color: white;
+}
+
+/* Lluvia */
+#animation-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.falling {
+  position: absolute;
+  font-size: 2rem;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  from { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
